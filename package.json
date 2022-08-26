@@ -1,21 +1,14 @@
 {
-  "name": "@spruceid/create-ssx-dapp",
-  "version": "0.0.16",
-  "description": "Creates a new SSX project from scratch.",
+  "name": "@araucariaid/create-ssx-next-dapp",
+  "version": "0.0.1",
+  "description": "Creates a new SSX Next project from scratch.",
   "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "ssh://git@github.com:spruceid/private-packages.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "files": [
     "templates",
     "src"
   ],
   "bin": {
-    "create-ssx-dapp": "src/main.js"
+    "create-ssx-next-dapp": "src/main.js"
   },
   "dependencies": {
     "chalk": "5.0.1",

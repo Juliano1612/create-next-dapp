@@ -1,7 +1,6 @@
 {
-  "name": "my-ssx-next-dapp",
+  "name": "@w4ll3/my-ssx-next-dapp",
   "version": "0.0.1",
-  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",

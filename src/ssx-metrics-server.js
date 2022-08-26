@@ -1,22 +1,50 @@
 import prompts from "prompts";
+import { launchUrl } from "./process.js";
 
 async function run(env, onCancel) {
     await ask(env, onCancel);
 }
 
 async function ask(env, onCancel) {
-    const { ssxMetricsServer } = await prompts([
+    const { enableSSXPlatform, alreadyHaveAPIKey } = await prompts([
         {
-            type: "text",
-            name: "ssxMetricsServer",
-            message: "Provide the SSX enabled server URL (leave blank if none)"
+            type: "toggle",
+            name: "enableSSXPlatform",
+            message: "Would you like to enable the SSX metrics platform?",
+            active: "yes",
+            inactive: "no",
+            initial: true,
+        },
+        {
+            type: prev => prev == true ? 'toggle' : null,
+            name: "alreadyHaveAPIKey",
+            message: "Do you already have an API Key?\nIf you don't have we will open the browser on the SSX Platform to continue the project creation to get a new API Key",
+            active: "yes",
+            inactive: "no",
+            initial: false,
         }
     ],
         { onCancel }
     );
 
-    if (ssxMetricsServer) {
-        env.NEXT_PUBLIC_SSX_METRICS_SERVER = ssxMetricsServer;
+    if (!alreadyHaveAPIKey) {
+        launchUrl("https://app.ssx.spruceid.xyz/login?returnTo=/projects/new");
+    }
+
+    const { ssxPlatformAPI } = await prompts([
+        {
+            type: 'text',
+            name: "ssxPlatformAPI",
+            message: "Provide the SSX Platform API Key "
+        }
+    ],
+        { onCancel }
+    );
+
+
+    if (enableSSXPlatform) {
+        env.SSX_API_TOKEN = ssxPlatformAPI ?? "";
+        env.SSX_ENABLE_METRICS = true;
     }
 }
 

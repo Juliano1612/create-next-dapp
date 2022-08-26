@@ -37,4 +37,4 @@ export const launchUrl = (url) => {
   }
 
   return null;
-}
+};

@@ -16,6 +16,7 @@ import web3modalProvider from "./web3modal.js";
 import os from "os";
 import Handlebars from "handlebars";
 import ssxMetricsServer from "./ssx-metrics-server.js";
+import crypto from 'crypto';
 
 const detectPackageManager = () => {
   try {
@@ -192,7 +193,13 @@ async function run() {
       projectPath = path;
     }
 
-    let env = {};
+    let env = {
+      NODE_ENV: "dev",
+      NEXT_PUBLIC_SSX_METRICS_SERVER: "localhost:3000/api",
+      PORT: 3000,
+      SSX_SIGNING_KEY: crypto.randomBytes(20).toString('hex'),
+      SSX_PLATFORM_API: "api.ssx.spruceid.xyz",
+    };
 
     const { provider } = await prompts([
       {
@@ -352,7 +359,7 @@ async function run() {
         `👉 To get started, run ${chalk.bold(
           `cd ${projectPath}`
         )} and then ${chalk.bold(
-          `${packageManager}${packageManager === "npm" ? " run" : ""} start`
+          `${packageManager}${packageManager === "npm" ? " run" : ""} dev`
         )}`
       )
     );

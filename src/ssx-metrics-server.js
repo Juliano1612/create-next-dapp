@@ -16,7 +16,7 @@ async function ask(env, onCancel) {
     );
 
     if (ssxMetricsServer) {
-        env.REACT_APP_SSX_METRICS_SERVER = ssxMetricsServer;
+        env.NEXT_PUBLIC_SSX_METRICS_SERVER = ssxMetricsServer;
     }
 }
 

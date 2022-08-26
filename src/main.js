@@ -63,7 +63,7 @@ const generateEnv = (targetPath, env) => {
 };
 
 const getProviderConfig = (env) => {
-  if (env.REACT_APP_SSX_INFURA_ID) {
+  if (env.NEXT_PUBLIC_SSX_INFURA_ID) {
     return [
       "",
       "\tprovider: {",
@@ -73,7 +73,7 @@ const getProviderConfig = (env) => {
       "\t\t\t\twalletconnect: {",
       "\t\t\t\t\tpackage: WalletConnectProvider,",
       "\t\t\t\t\toptions: {",
-      "\t\t\t\t\t\tinfuraId: process.env.REACT_APP_SSX_INFURA_ID,",
+      "\t\t\t\t\t\tinfuraId: process.env.NEXT_PUBLIC_SSX_INFURA_ID,",
       "\t\t\t\t\t},",
       "\t\t\t\t},",
       "\t\t\t},",
@@ -91,7 +91,7 @@ const getProviderConfig = (env) => {
 };
 
 const getProviderImport = (env) => {
-  if (env.REACT_APP_SSX_INFURA_ID) {
+  if (env.NEXT_PUBLIC_SSX_INFURA_ID) {
     return `import WalletConnectProvider from "@walletconnect/web3-provider";${os.EOL}import { ProviderType } from "@spruceid/ssx";${os.EOL}`;
   } else {
     return `import { ProviderType } from "@spruceid/ssx";${os.EOL}`;
@@ -108,14 +108,14 @@ const generateSSXConfig = (templatesPath, targetPath, provider, env) => {
     provider: provider === "MetaMask" ?
       "" :
       getProviderConfig(env),
-    server: env.REACT_APP_SSX_METRICS_SERVER ?
-      `${os.EOL}\tserver: process.env.REACT_APP_SSX_METRICS_SERVER,`
+    server: env.NEXT_PUBLIC_SSX_METRICS_SERVER ?
+      `${os.EOL}\tserver: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER,`
       : "",
-    delegationLookup: env.REACT_APP_SSX_DELEGATION_LOOKUP ?
-      `${os.EOL}\tdelegationLookup: !!(process.env.REACT_APP_SSX_DELEGATION_LOOKUP === "true"),` :
+    delegationLookup: env.NEXT_PUBLIC_SSX_DELEGATION_LOOKUP ?
+      `${os.EOL}\tdelegationLookup: !!(process.env.NEXT_PUBLIC_SSX_DELEGATION_LOOKUP === "true"),` :
       "",
-    storage: env.REACT_APP_SSX_STORAGE_TYPE ?
-      `${os.EOL}\tstorage: process.env.REACT_APP_SSX_STORAGE_TYPE,` :
+    storage: env.NEXT_PUBLIC_SSX_STORAGE_TYPE ?
+      `${os.EOL}\tstorage: process.env.NEXT_PUBLIC_SSX_STORAGE_TYPE,` :
       "",
   });
 
@@ -194,15 +194,7 @@ async function run() {
 
     let env = {};
 
-    const { typescript, provider } = await prompts([
-      {
-        type: "toggle",
-        name: "typescript",
-        message: "Would you like to use TypeScript?",
-        active: "yes",
-        inactive: "no",
-        initial: true,
-      },
+    const { provider } = await prompts([
       {
         type: "select",
         name: "provider",
@@ -239,7 +231,7 @@ async function run() {
 
     await ssxMetricsServer.run(env, onCancel);
 
-    projectTemplate = typescript ? "typescript" : "default";
+    projectTemplate = "typescript";
 
     log();
 
@@ -336,22 +328,22 @@ async function run() {
       )
     );
 
-    // await execa(packageManager, ["install"], {
-    //   cwd: targetPath,
-    //   stdio: "inherit",
-    // });
+    await execa(packageManager, ["install"], {
+      cwd: targetPath,
+      stdio: "inherit",
+    });
 
-    // await execa(
-    //   packageManager,
-    //   [
-    //     packageManager === 'yarn' ? 'add' : 'install',
-    //     '@spruceid/ssx',
-    //   ],
-    //   {
-    //     cwd: targetPath,
-    //     stdio: 'inherit',
-    //   },
-    // );
+    await execa(
+      packageManager,
+      [
+        packageManager === 'yarn' ? 'add' : 'install',
+        '@spruceid/ssx',
+      ],
+      {
+        cwd: targetPath,
+        stdio: 'inherit',
+      },
+    );
 
     log(chalk.green("Project created. Happy coding."));
     log();

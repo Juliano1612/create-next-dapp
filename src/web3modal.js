@@ -24,7 +24,7 @@ async function ask(env, onCancel) {
     );
 
     if (enableWalletConnect) {
-        env.REACT_APP_SSX_INFURA_ID = infuraId;
+        env.NEXT_PUBLIC_SSX_INFURA_ID = infuraId;
     }
 
 }

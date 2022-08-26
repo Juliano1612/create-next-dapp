@@ -1,15 +1,25 @@
 #!/usr/bin/env node
 
 import chalk from "chalk";
-import { execSync } from "child_process";
-import { Command } from "commander";
+import {
+  execSync
+} from "child_process";
+import {
+  Command
+} from "commander";
 import cpy from "cpy";
-import { execa } from "execa";
+import {
+  execa
+} from "execa";
 import fs from "fs-extra";
-import { createRequire } from "module";
+import {
+  createRequire
+} from "module";
 import path from "path";
 import prompts from "prompts";
-import { fileURLToPath } from "url";
+import {
+  fileURLToPath
+} from "url";
 import validateNpmPackageName from "validate-npm-package-name";
 import delegationFeature from "./delegation.js";
 import web3modalProvider from "./web3modal.js";
@@ -34,10 +44,14 @@ const detectPackageManager = () => {
       }
     }
     try {
-      execSync("pnpm --version", { stdio: "ignore" });
+      execSync("pnpm --version", {
+        stdio: "ignore"
+      });
       return "pnpm";
     } catch {
-      execSync("yarn --version", { stdio: "ignore" });
+      execSync("yarn --version", {
+        stdio: "ignore"
+      });
       return "yarn";
     }
   } catch {
@@ -104,20 +118,15 @@ const generateSSXConfig = (templatesPath, targetPath, provider, env) => {
   const template = Handlebars.compile(source);
   const content = template({
     importProvider: provider === "MetaMask" ?
-      "" :
-      getProviderImport(env),
+      "" : getProviderImport(env),
     provider: provider === "MetaMask" ?
-      "" :
-      getProviderConfig(env),
+      "" : getProviderConfig(env),
     server: env.NEXT_PUBLIC_SSX_METRICS_SERVER ?
-      `${os.EOL}\tserver: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER,`
-      : "",
+      `${os.EOL}\tserver: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER,` : "",
     delegationLookup: env.NEXT_PUBLIC_SSX_DELEGATION_LOOKUP ?
-      `${os.EOL}\tdelegationLookup: !!(process.env.NEXT_PUBLIC_SSX_DELEGATION_LOOKUP === "true"),` :
-      "",
+      `${os.EOL}\tdelegationLookup: !!(process.env.NEXT_PUBLIC_SSX_DELEGATION_LOOKUP === "true"),` : "",
     storage: env.NEXT_PUBLIC_SSX_STORAGE_TYPE ?
-      `${os.EOL}\tstorage: process.env.NEXT_PUBLIC_SSX_STORAGE_TYPE,` :
-      "",
+      `${os.EOL}\tstorage: process.env.NEXT_PUBLIC_SSX_STORAGE_TYPE,` : "",
   });
 
   fs.writeFileSync(path.join(targetPath, "ssx.config.js"), content, function (err) {
@@ -126,14 +135,17 @@ const generateSSXConfig = (templatesPath, targetPath, provider, env) => {
 
 };
 
-const { log } = console;
+const {
+  log
+} = console;
 
 async function run() {
   try {
     let projectPath = "";
     let projectTemplate = "";
 
-    const packageJson = createRequire(import.meta.url)("../package.json");
+    const packageJson = createRequire(
+      import.meta.url)("../package.json");
 
     const program = new Command(packageJson.name)
       .version(packageJson.version)
@@ -184,7 +196,9 @@ async function run() {
 
     if (!projectPath) {
       log();
-      const { path } = await prompts({
+      const {
+        path
+      } = await prompts({
         initial: "my-ssx-next-dapp",
         message: "What is the name of your project?",
         name: "path",
@@ -195,42 +209,48 @@ async function run() {
 
     let env = {
       NODE_ENV: "dev",
-      NEXT_PUBLIC_SSX_METRICS_SERVER: "localhost:3000/api",
-      PORT: 3000,
+      NEXT_PUBLIC_SSX_METRICS_SERVER: "http://localhost:3000/api",
       SSX_SIGNING_KEY: crypto.randomBytes(20).toString('hex'),
-      SSX_PLATFORM_API: "api.ssx.spruceid.xyz",
+      SSX_PLATFORM_API: "https://api.ssx.spruceid.xyz",
     };
 
-    const { provider } = await prompts([
-      {
-        type: "select",
-        name: "provider",
-        message: "Which will be your default provider?",
-        choices: [
-          { title: "MetaMask", value: "MetaMask" },
-          { title: "Web3Modal", value: web3modalProvider }
-        ]
-      }
-    ],
-      { onCancel }
-    );
+    const {
+      provider
+    } = await prompts([{
+      type: "select",
+      name: "provider",
+      message: "Which will be your default provider?",
+      choices: [{
+          title: "MetaMask",
+          value: "MetaMask"
+        },
+        {
+          title: "Web3Modal",
+          value: web3modalProvider
+        }
+      ]
+    }], {
+      onCancel
+    });
 
     if (provider.run) await provider.run(env, onCancel);
 
-    const { features } = await prompts([
-      {
-        type: "multiselect",
-        name: "features",
-        message: "Which features would you like to enable?",
-        choices: [
-          { title: "Delegation History", value: delegationFeature },
-          // TODO(w4ll3): figure out typing
-          // { title: "Storage", value: storageFeature },
-        ],
-      },
-    ],
-      { onCancel }
-    );
+    const {
+      features
+    } = await prompts([{
+      type: "multiselect",
+      name: "features",
+      message: "Which features would you like to enable?",
+      choices: [{
+          title: "Delegation History",
+          value: delegationFeature
+        },
+        // TODO(w4ll3): figure out typing
+        // { title: "Storage", value: storageFeature },
+      ],
+    }, ], {
+      onCancel
+    });
 
     features.forEach(async (feature) => {
       await feature.run(env, onCancel);
@@ -277,7 +297,8 @@ async function run() {
       );
     }
 
-    const dirname = fileURLToPath(new URL(".", import.meta.url));
+    const dirname = fileURLToPath(new URL(".",
+      import.meta.url));
     const templatesPath = path.join(dirname, "..", "templates");
     const selectedTemplatePath = path.join(templatesPath, projectTemplate);
 
@@ -345,8 +366,7 @@ async function run() {
       [
         packageManager === 'yarn' ? 'add' : 'install',
         '@spruceid/ssx',
-      ],
-      {
+      ], {
         cwd: targetPath,
         stdio: 'inherit',
       },

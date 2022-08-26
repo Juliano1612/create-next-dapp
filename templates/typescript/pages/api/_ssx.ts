@@ -1,4 +1,5 @@
 import { SSXServer } from "@spruceid/ssx-server";
+import { providers } from "ethers";
 
 const ssx = new SSXServer({
   apiToken: process.env.SSX_API_TOKEN,

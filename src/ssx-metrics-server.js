@@ -27,25 +27,24 @@ async function ask(env, onCancel) {
         { onCancel }
     );
 
-    if (!alreadyHaveAPIKey) {
-        launchUrl("https://app.ssx.spruceid.xyz/login?returnTo=/projects/new");
-    }
-
-    const { ssxPlatformAPI } = await prompts([
-        {
-            type: 'text',
-            name: "ssxPlatformAPI",
-            message: "Provide the SSX Platform API Key "
-        }
-    ],
-        { onCancel }
-    );
-
-
     if (enableSSXPlatform) {
+        if (!alreadyHaveAPIKey) {
+            launchUrl("https://app.ssx.spruceid.xyz/login?returnTo=/projects/new");
+        }
+        const { ssxPlatformAPI } = await prompts([
+            {
+                type: 'text',
+                name: "ssxPlatformAPI",
+                message: "Provide the SSX Platform API Key "
+            }
+        ],
+            { onCancel }
+        );
+
         env.SSX_API_TOKEN = ssxPlatformAPI ?? "";
         env.SSX_ENABLE_METRICS = true;
     }
+
 }
 
 export default {

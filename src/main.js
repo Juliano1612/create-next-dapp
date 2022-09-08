@@ -77,56 +77,82 @@ const generateEnv = (targetPath, env) => {
   });
 };
 
-const getProviderConfig = (env) => {
+const getProviderConfig = (env, provider) => {
+  if (provider === "MetaMask") {
+    if (env.NEXT_PUBLIC_SSX_METRICS_SERVER) {
+      return [
+        "",
+        "\t\tprovider: { backend: { host: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER ?? \"\" } },",
+      ].join(os.EOL);
+    } else {
+      return "";
+    }
+  } else {
+    if (env.NEXT_PUBLIC_SSX_METRICS_SERVER) {
+      return [
+        "",
+        "\t\tprovider: {",
+        "\t\t\tweb3: { driver },",
+        "\t\t\tbackend: { host: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER ?? \"\" },",
+        "\t\t},"
+      ].join(os.EOL);
+    } else {
+      return [
+        "",
+        "\t\tprovider: { web3: { driver } },",
+      ].join(os.EOL);
+    }
+  }
+};
+
+const getDriver = (env) => {
   if (env.NEXT_PUBLIC_SSX_INFURA_ID) {
     return [
-      "",
-      "\tprovider: {",
-      "\t\ttype: ProviderType.Web3Modal,",
-      "\t\tconfig: {",
-      "\t\t\tproviderOptions: {",
-      "\t\t\t\twalletconnect: {",
-      "\t\t\t\t\tpackage: WalletConnectProvider,",
-      "\t\t\t\t\toptions: {",
-      "\t\t\t\t\t\tinfuraId: process.env.NEXT_PUBLIC_SSX_INFURA_ID,",
-      "\t\t\t\t\t},",
+      "\tconst driver = await new Web3Modal({",
+      "\t\tproviderOptions: {",
+      "\t\t\twalletconnect: {",
+      "\t\t\t\tpackage: WalletConnectProvider,",
+      "\t\t\t\toptions: {",
+      "\t\t\t\t\tinfuraId: process.env.NEXT_PUBLIC_SSX_INFURA_ID,",
       "\t\t\t\t},",
       "\t\t\t},",
-      "\t\t}",
-      "\t},"
+      "\t\t},",
+      "\t}).connect();",
+      ""
     ].join(os.EOL);
   } else {
     return [
-      "",
-      "\tprovider: {",
-      "\t\ttype: ProviderType.Web3Modal,",
-      "\t},"
+      "\tconst driver = await new Web3Modal().connect();",
+      ""
     ].join(os.EOL);
   }
 };
 
 const getProviderImport = (env) => {
   if (env.NEXT_PUBLIC_SSX_INFURA_ID) {
-    return `import WalletConnectProvider from "@walletconnect/web3-provider";${os.EOL}import { ProviderType } from "@spruceid/ssx";${os.EOL}`;
+    return `import Web3Modal from "web3modal";${os.EOL}import WalletConnectProvider from "@walletconnect/web3-provider";${os.EOL}`;
   } else {
-    return `import { ProviderType } from "@spruceid/ssx";${os.EOL}`;
+    return `import Web3Modal from "web3modal";${os.EOL}`;
   }
 };
 
 const generateSSXConfig = (templatesPath, targetPath, provider, env) => {
-  const source = fs.readFileSync(path.join(templatesPath, 'ssx.config.hbs')).toString();
+  const source = fs.readFileSync(path.join(templatesPath, "ssx.config.hbs")).toString();
   const template = Handlebars.compile(source);
   const content = template({
     importProvider: provider === "MetaMask" ?
-      "" : getProviderImport(env),
-    provider: provider === "MetaMask" ?
-      "" : getProviderConfig(env),
-    server: env.NEXT_PUBLIC_SSX_METRICS_SERVER ?
-      `${os.EOL}\tserver: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER,` : "",
-    delegationLookup: env.NEXT_PUBLIC_SSX_DELEGATION_LOOKUP ?
-      `${os.EOL}\tdelegationLookup: !!(process.env.NEXT_PUBLIC_SSX_DELEGATION_LOOKUP === "true"),` : "",
+      "" :
+      getProviderImport(env),
+    driver: provider === "MetaMask" ?
+      "" :
+      getDriver(env),
+    provider: getProviderConfig(env, provider),
+    daoLogin: env.NEXT_PUBLIC_SSX_DAO_LOGIN ?
+      `${os.EOL}\t\tdaoLogin: !!(process.env.NEXT_PUBLIC_SSX_DAO_LOGIN === "true"),` :
+      "",
     storage: env.NEXT_PUBLIC_SSX_STORAGE_TYPE ?
-      `${os.EOL}\tstorage: process.env.NEXT_PUBLIC_SSX_STORAGE_TYPE,` : "",
+      `${os.EOL}\t\tstorage: process.env.NEXT_PUBLIC_SSX_STORAGE_TYPE,` :
+      "",
   });
 
   fs.writeFileSync(path.join(targetPath, "ssx.config.js"), content, function (err) {
@@ -203,7 +229,9 @@ async function run() {
         message: "What is the name of your project?",
         name: "path",
         type: "text",
-      });
+      },
+        { onCancel }
+      );
       projectPath = path;
     }
 
@@ -215,23 +243,34 @@ async function run() {
     };
 
     const {
+      infuraId,
       provider
-    } = await prompts([{
-      type: "select",
-      name: "provider",
-      message: "Which will be your default provider?",
-      choices: [{
-          title: "MetaMask",
-          value: "MetaMask"
-        },
-        {
-          title: "Web3Modal",
-          value: web3modalProvider
-        }
-      ]
-    }], {
+    } = await prompts([
+      {
+        type: 'text',
+        name: "infuraId",
+        message: "Please, inform an infuraId"
+      },
+      {
+        type: "select",
+        name: "provider",
+        message: "Which will be your default provider?",
+        choices: [
+          {
+            title: "MetaMask",
+            value: "MetaMask"
+          },
+          {
+            title: "Web3Modal",
+            value: web3modalProvider
+          }
+        ]
+      }
+    ], {
       onCancel
     });
+
+    env.SSX_INFURA_ID = infuraId;
 
     if (provider.run) await provider.run(env, onCancel);
 
@@ -242,13 +281,13 @@ async function run() {
       name: "features",
       message: "Which features would you like to enable?",
       choices: [{
-          title: "Delegation History",
-          value: delegationFeature
-        },
+        title: "Delegation History",
+        value: delegationFeature
+      },
         // TODO(w4ll3): figure out typing
         // { title: "Storage", value: storageFeature },
       ],
-    }, ], {
+    },], {
       onCancel
     });
 

@@ -1,7 +1,7 @@
 import { SSX } from "@spruceid/ssx";
 import Image from "next/image";
 import { useState } from "react";
-import ssxConfig from "../ssx.config";
+import getSSXConfig from "../ssx.config";
 import AccountInfo from "./AccountInfo";
 
 const SSXExample = ({ }) => {
@@ -9,7 +9,8 @@ const SSXExample = ({ }) => {
     const [ssxProvider, setSSX] = useState<SSX | null>(null);
 
     const ssxHandler = async () => {
-        const ssx = new SSX(Object.keys(ssxConfig).length === 0 ? undefined : ssxConfig);
+        const ssxConfig = await getSSXConfig();
+        const ssx = new SSX(ssxConfig);
         await ssx.signIn();
         setSSX(ssx);
         (window as any).ssx = ssx;

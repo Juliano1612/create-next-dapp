@@ -1,6 +1,6 @@
 {
-  "name": "@w4ll3/my-ssx-next-dapp",
-  "version": "0.0.1",
+  "name": "@araucariaid/my-ssx-next-dapp",
+  "version": "0.0.3",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -8,8 +8,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@spruceid/ssx-server": "^0.0.4-alpha.1",
-    "@spruceid/ssx": "^0.0.11",
+    "@spruceid/ssx-server": "^0.0.7",
+    "@spruceid/ssx": "^0.0.15",
     "@walletconnect/web3-provider": "^1.8.0",
     "cors": "^2.8.5",
     "ethers": "^5.7.0",

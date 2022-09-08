@@ -1,15 +1,18 @@
-import { SSXServer } from "@spruceid/ssx-server";
-import { providers } from "ethers";
+import { SSXServer, SSXRPCProviders, SSXInfuraProviderNetworks } from "@spruceid/ssx-server";
 
 const ssx = new SSXServer({
-  apiToken: process.env.SSX_API_TOKEN,
-  apiUrl: process.env.SSX_PLATFORM_API,
   signingKey: process.env.SSX_SIGNING_KEY,
-  logging: true,
-  provider: new providers.InfuraProvider(
-    "homestead",
-    process.env.INFURA_API_KEY
-  ),
+  provider: {
+    rpc: {
+      service: SSXRPCProviders.SSXInfuraProvider,
+      network: SSXInfuraProviderNetworks.RINKEBY,
+      apiKey: process.env.SSX_INFURA_ID ?? "",
+    },
+    metrics: {
+      service: 'ssx',
+      apiKey: process.env.SSX_API_TOKEN ?? ""
+    }
+  }
 });
 
 export default ssx;

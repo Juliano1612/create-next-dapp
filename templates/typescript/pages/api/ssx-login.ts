@@ -6,7 +6,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     nonce: ssx.login(
       req.body.siwe,
       req.body.signature,
-      req.body.delegationLookup,
+      req.body.daoLogin,
       req.cookies.nonce || ""
     ),
   });

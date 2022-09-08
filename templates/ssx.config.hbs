@@ -1,5 +1,9 @@
 {{{ importProvider }}}
-const ssxConfig = { {{ provider }}{{ server }}{{{ delegationLookup }}}{{ storage }}
+
+const getSSXConfig = async () => {
+{{{ driver }}}
+	return { {{{ daoLogin }}}{{{ provider }}}{{{ storage }}}
+	};
 };
 
-export default ssxConfig; 
+export default getSSXConfig; 

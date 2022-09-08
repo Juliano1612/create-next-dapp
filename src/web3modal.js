@@ -5,7 +5,7 @@ async function run(env, onCancel) {
 }
 
 async function ask(env, onCancel) {
-    const { enableWalletConnect, infuraId } = await prompts([
+    const { enableWalletConnect } = await prompts([
         {
             type: "toggle",
             name: "enableWalletConnect",
@@ -13,18 +13,13 @@ async function ask(env, onCancel) {
             active: "yes",
             inactive: "no",
             initial: true,
-        },
-        {
-            type: prev => prev == true ? 'text' : null,
-            name: "infuraId",
-            message: "WalletConnect requires an infuraId. What is yours?"
         }
     ],
         { onCancel }
     );
 
     if (enableWalletConnect) {
-        env.NEXT_PUBLIC_SSX_INFURA_ID = infuraId;
+        env.NEXT_PUBLIC_SSX_INFURA_ID = env.SSX_INFURA_ID;
     }
 
 }

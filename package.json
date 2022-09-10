@@ -1,6 +1,6 @@
 {
   "name": "@araucariaid/create-ssx-next-dapp",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Creates a new SSX Next project from scratch.",
   "type": "module",
   "files": [

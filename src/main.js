@@ -82,7 +82,7 @@ const getProviderConfig = (env, provider) => {
     if (env.NEXT_PUBLIC_SSX_METRICS_SERVER) {
       return [
         "",
-        "\t\tprovider: { backend: { host: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER ?? \"\" } },",
+        "\t\tproviders: { server: { host: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER ?? \"\" } },",
       ].join(os.EOL);
     } else {
       return "";
@@ -91,15 +91,15 @@ const getProviderConfig = (env, provider) => {
     if (env.NEXT_PUBLIC_SSX_METRICS_SERVER) {
       return [
         "",
-        "\t\tprovider: {",
+        "\t\tproviders: {",
         "\t\t\tweb3: { driver },",
-        "\t\t\tbackend: { host: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER ?? \"\" },",
+        "\t\t\tserver: { host: process.env.NEXT_PUBLIC_SSX_METRICS_SERVER ?? \"\" },",
         "\t\t},"
       ].join(os.EOL);
     } else {
       return [
         "",
-        "\t\tprovider: { web3: { driver } },",
+        "\t\tproviders: { web3: { driver } },",
       ].join(os.EOL);
     }
   }
@@ -146,9 +146,9 @@ const generateSSXConfig = (templatesPath, targetPath, provider, env) => {
     driver: provider === "MetaMask" ?
       "" :
       getDriver(env),
-    provider: getProviderConfig(env, provider),
-    daoLogin: env.NEXT_PUBLIC_SSX_DAO_LOGIN ?
-      `${os.EOL}\t\tdaoLogin: !!(process.env.NEXT_PUBLIC_SSX_DAO_LOGIN === "true"),` :
+    providers: getProviderConfig(env, provider),
+    enableDaoLogin: env.NEXT_PUBLIC_SSX_DAO_LOGIN ?
+      `${os.EOL}\t\tenableDaoLogin: !!(process.env.NEXT_PUBLIC_SSX_DAO_LOGIN === "true"),` :
       "",
     storage: env.NEXT_PUBLIC_SSX_STORAGE_TYPE ?
       `${os.EOL}\t\tstorage: process.env.NEXT_PUBLIC_SSX_STORAGE_TYPE,` :
@@ -239,7 +239,7 @@ async function run() {
       NODE_ENV: "dev",
       NEXT_PUBLIC_SSX_METRICS_SERVER: "http://localhost:3000/api",
       SSX_SIGNING_KEY: crypto.randomBytes(20).toString('hex'),
-      SSX_PLATFORM_API: "https://api.ssx.spruceid.xyz",
+      SSX_PLATFORM_API: "https://api.ssx.id",
     };
 
     const {

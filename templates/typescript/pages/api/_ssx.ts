@@ -2,10 +2,10 @@ import { SSXServer, SSXRPCProviders, SSXInfuraProviderNetworks } from "@spruceid
 
 const ssx = new SSXServer({
   signingKey: process.env.SSX_SIGNING_KEY,
-  provider: {
+  providers: {
     rpc: {
       service: SSXRPCProviders.SSXInfuraProvider,
-      network: SSXInfuraProviderNetworks.RINKEBY,
+      network: SSXInfuraProviderNetworks.GOERLI,
       apiKey: process.env.SSX_INFURA_ID ?? "",
     },
     metrics: {

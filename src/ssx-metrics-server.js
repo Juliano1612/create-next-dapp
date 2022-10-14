@@ -29,7 +29,7 @@ async function ask(env, onCancel) {
 
     if (enableSSXPlatform) {
         if (!alreadyHaveAPIKey) {
-            launchUrl("https://app.ssx.spruceid.xyz/login?returnTo=/projects/new");
+            launchUrl("https://app.ssx.id/login?returnTo=/projects/new");
         }
         const { ssxPlatformAPI } = await prompts([
             {
